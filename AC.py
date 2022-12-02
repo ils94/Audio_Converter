@@ -155,6 +155,7 @@ var_channel.set("Ch 2")
 root.geometry("350x155+" + str(int(x)) + "+" + str(int(y)))
 root.title("Audio Converter")
 root.resizable(False, False)
+root.attributes("-topmost", True)
 if os.path.isfile("icon/icon.ico"):
     root.iconbitmap("icon/icon.ico")
 
