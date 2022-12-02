@@ -138,12 +138,12 @@ frame1.pack(fill=X)
 
 entry_in = Entry()
 entry_in.pack(fill=X, padx=5, pady=1)
-entry_in.insert(0, "Folder with audio files to convert")
+entry_in.insert(0, "Double click to choose the folder with audio files to convert")
 entry_in.bind("<Double-Button-1>", lambda x: file_dialog(entry_in))
 
 entry_out = Entry()
 entry_out.pack(fill=X, padx=5, pady=1)
-entry_out.insert(0, "Folder where the converted audios will be saved")
+entry_out.insert(0, "Double click here to choose the output folder")
 entry_out.bind("<Double-Button-1>", lambda x: file_dialog(entry_out))
 
 frame2 = Frame(root)
