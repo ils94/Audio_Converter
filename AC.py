@@ -48,17 +48,12 @@ def multithreading(function):
 
 
 def convert():
-    try:
-        global audio_list, STOP
+    global audio_list, STOP
 
+    try:
         counter = 0
 
         pb["value"] = 0
-
-        if os.path.isdir(entry_in.get()) and os.path.isdir(entry_out.get()):
-            for file in os.listdir(entry_in.get()):
-                if file.endswith(".mp3") or file.endswith(".mp4") or file.endswith(".wav") or file.endswith(".ogg"):
-                    audio_list.append(file)
 
         if audio_list:
 
@@ -70,41 +65,71 @@ def convert():
                 if not STOP:
                     counter += 1
 
-                    audio_name["text"] = 'Converting "' + audio
+                    audio_name = audio.split("/")
 
-                    sound = AudioSegment.from_file(entry_in.get() + "/" + audio)
+                    audio_name.reverse()
+
+                    name = audio_name[0]
+
+                    label_audio_name["text"] = 'Converting "' + name
+
+                    sound = AudioSegment.from_file(audio)
                     sound.set_frame_rate(int(var_sample_rate.get().replace(" Khz", "")))
                     sound.set_channels(int(var_channel.get().replace("Ch ", "")))
-                    no_ex = audio.split(".")
+                    no_ex = name.split(".")
                     sound.export(entry_out.get() + "/" + no_ex[0] + "." + var_extension.get(),
                                  format=var_extension.get(),
                                  bitrate=var_bit_rate.get().replace(" kbps", "") + "k")
-
                     pb["value"] = counter / len(audio_list) * 100
+
                 else:
                     pb["value"] = 0
                     button_stop["state"] = "normal"
                     button_stop["text"] = "Stop"
-                    STOP = True
-                    audio_list.clear()
                     break
 
-            audio_name["text"] = "All done!"
+            label_audio_name["text"] = "All done!"
             STOP = True
             audio_list.clear()
             enable_widgets()
+            entry_in.delete(0, END)
+            entry_in.insert(0, "Double click here to choose an audio(s) to convert")
 
     except Exception as e:
-        messagebox.showerror("Error", str(e))
+        label_audio_name["text"] = "Error!"
+        STOP = True
+        audio_list.clear()
         enable_widgets()
+        entry_in.delete(0, END)
+        entry_in.insert(0, "Double click here to choose an audio(s) to convert")
+        messagebox.showerror("Error", str(e))
 
 
-def file_dialog(entry):
+def select_audio():
+    global audio_list
+
+    display_list = []
+
+    file = filedialog.askopenfilenames(title="Choose a file", filetypes=[("Audio files", ".mp3 .mp4 .wav .ogg")])
+
+    audio_list = list(file)
+
+    for file in audio_list:
+        name = file.split("/")
+        name.reverse()
+        display_list.append(name[0])
+
+    if file != "":
+        entry_in.delete(0, END)
+        entry_in.insert(0, str(display_list))
+
+
+def select_output_folder():
     file = filedialog.askdirectory()
 
     if file != "":
-        entry.delete(0, END)
-        entry.insert(0, file)
+        entry_out.delete(0, END)
+        entry_out.insert(0, file)
 
 
 root = Tk()
@@ -138,13 +163,13 @@ frame1.pack(fill=X)
 
 entry_in = Entry()
 entry_in.pack(fill=X, padx=5, pady=1)
-entry_in.insert(0, "Double click to choose the folder with audio files to convert")
-entry_in.bind("<Double-Button-1>", lambda x: file_dialog(entry_in))
+entry_in.insert(0, "Double click here to choose an audio(s) to convert")
+entry_in.bind("<Double-Button-1>", lambda x: select_audio())
 
 entry_out = Entry()
 entry_out.pack(fill=X, padx=5, pady=1)
 entry_out.insert(0, "Double click here to choose the output folder")
-entry_out.bind("<Double-Button-1>", lambda x: file_dialog(entry_out))
+entry_out.bind("<Double-Button-1>", lambda x: select_output_folder())
 
 frame2 = Frame(root)
 frame2.pack(fill=X)
@@ -171,8 +196,8 @@ frame3.pack(fill=X)
 pb = ttk.Progressbar(frame3, orient="horizontal", mode="determinate", length=100)
 pb.pack(fill=X, padx=5, pady=1)
 
-audio_name = Label(frame3)
-audio_name.pack(padx=5, pady=1)
+label_audio_name = Label(frame3)
+label_audio_name.pack(padx=5, pady=1)
 
 frame4 = Frame(root)
 frame4.pack(fill=X)
