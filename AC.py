@@ -51,8 +51,6 @@ def convert():
     try:
         global audio_list, STOP
 
-        STOP = False
-
         counter = 0
 
         pb["value"] = 0
@@ -63,6 +61,8 @@ def convert():
                     audio_list.append(file)
 
         if audio_list:
+
+            STOP = False
 
             disable_widgets()
 
